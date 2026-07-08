@@ -1,0 +1,9 @@
+{
+  "name": "adzuna-cli",
+  "version": "1.0.0",
+  "description": "CLI for the Adzuna job search API (US market)",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  }
+}
