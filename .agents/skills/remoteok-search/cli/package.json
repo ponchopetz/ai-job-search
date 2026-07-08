@@ -1,0 +1,9 @@
+{
+  "name": "remoteok-cli",
+  "version": "1.0.0",
+  "description": "CLI for the RemoteOK remote-jobs API",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  }
+}
