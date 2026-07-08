@@ -8,14 +8,15 @@ market. The user is job searching in the US and ran the quick-start `bun install
 these by mistake. They also tried a `linkedin-search` skill from the quick-start guide that
 doesn't exist in this repo.
 
-There is no existing US-market equivalent to install. This design covers building three new
-job-board search skills for the US market and removing the four Danish ones.
+There is no existing US-market equivalent to install. This design covers building two new
+job-board search skills for the US market and removing the four Danish ones. (USAJobs.gov was
+considered but dropped — federal-only listings are too narrow for general job search.)
 
 ## Goals
 
 - Remove the four Danish job-portal skills (source + installed dependencies) entirely.
-- Add three working, independently-verified CLI-based search skills for the US market:
-  USAJobs.gov, Adzuna, RemoteOK.
+- Add two working, independently-verified CLI-based search skills for the US market:
+  Adzuna, RemoteOK.
 - Match the existing skill-invocation convention (standalone `context: fork` skills triggered
   by user message phrasing, `bun run .../cli.ts <command> --flags`, `--format json|table|plain`,
   errors as `{error, code}` JSON on stderr) so Claude Code's invocation pattern doesn't change.
@@ -49,7 +50,7 @@ JSON) stays identical so it's a drop-in match for how Claude Code invokes these 
 
 ```
 .agents/skills/
-├── usajobs-search/
+├── adzuna-search/
 │   ├── SKILL.md
 │   └── cli/
 │       ├── package.json
@@ -57,8 +58,6 @@ JSON) stays identical so it's a drop-in match for how Claude Code invokes these 
 │       ├── src/helpers.ts
 │       ├── tests/helpers.test.ts
 │       └── README.md
-├── adzuna-search/
-│   └── ... (same shape)
 └── remoteok-search/
     └── ... (same shape)
 ```
@@ -70,22 +69,7 @@ Bash(bun run skills/<name>/cli/src/cli.ts *)`.
 
 ## Per-source specifics
 
-### 1. USAJobs.gov (`usajobs-search`) — federal/public-sector jobs
-
-- **Auth**: free registration at developer.usajobs.gov yields an email-based `User-Agent`
-  string and an `Authorization-Key`. Required request headers: `Host: data.usajobs.gov`,
-  `User-Agent: <registered email>`, `Authorization-Key: <key>`.
-- **Endpoint**: `GET https://data.usajobs.gov/api/search?Keyword=...&LocationName=...&ResultsPerPage=...&Page=...`
-- **Commands**:
-  - `search` — keyword, location, pay-grade, remote filters.
-  - `detail` — passthrough for a single position's full `JobSummary`/`QualificationSummary`
-    (search results already carry most fields, but full text requires this).
-- **Response shape**: `SearchResult.SearchResultItems[]`, each with a `MatchedObjectDescriptor`
-  containing `PositionTitle`, `PositionURI`, `OrganizationName`, `DepartmentName`,
-  `PositionLocationDisplay`, `PositionRemuneration[]`, `PublicationStartDate`,
-  `ApplicationCloseDate`.
-
-### 2. Adzuna (`adzuna-search`) — broad private-sector aggregator
+### 1. Adzuna (`adzuna-search`) — broad private-sector aggregator
 
 - **Auth**: free `app_id` + `app_key` from developer.adzuna.com, passed as query params (not
   headers).
@@ -96,7 +80,7 @@ Bash(bun run skills/<name>/cli/src/cli.ts *)`.
   `location.display_name`/`area`, `redirect_url`, `salary_min`/`salary_max`, `description`
   (snippet), `created` (ISO timestamp), `contract_type`.
 
-### 3. RemoteOK (`remoteok-search`) — remote-first tech jobs
+### 2. RemoteOK (`remoteok-search`) — remote-first tech jobs
 
 - **Auth**: none required, but a bare request 403s (confirmed by direct test) — needs a
   realistic `User-Agent` header to succeed.
@@ -109,18 +93,16 @@ Bash(bun run skills/<name>/cli/src/cli.ts *)`.
 
 ## Credential storage
 
-A single root-level `.env` (added to `.gitignore`) holds:
+A single root-level `.env` (gitignored, real values never committed) holds:
 
 ```
-USAJOBS_API_KEY=
-USAJOBS_USER_AGENT=
 ADZUNA_APP_ID=
 ADZUNA_APP_KEY=
 ```
 
-A `.env.example` ships with the same blank keys and inline comments pointing to each
-registration page. `helpers.ts` in each skill reads via `process.env` and fails fast with a
-clear error (e.g. `{error: "Missing USAJOBS_API_KEY - register at https://developer.usajobs.gov", code: "MISSING_CREDENTIALS"}`)
+A `.env.example` ships with the same blank keys and an inline comment pointing to the
+registration page. `helpers.ts` in `adzuna-search` reads via `process.env` and fails fast with
+a clear error (e.g. `{error: "Missing ADZUNA_APP_ID - register at https://developer.adzuna.com", code: "MISSING_CREDENTIALS"}`)
 rather than surfacing a raw fetch failure. RemoteOK needs no credentials.
 
 ## Shared implementation details
@@ -131,7 +113,7 @@ rather than surfacing a raw fetch failure. RemoteOK needs no credentials.
   pattern as the one working piece of the Danish `jobnet-search` helper); throws on other
   non-OK statuses.
 - `writeError(error, code)` — writes `{error, code}` JSON to stderr, exits process with code 1.
-- `formatOutput(data, format)` — shared `json`/`table`/`plain` rendering so all three tools
+- `formatOutput(data, format)` — shared `json`/`table`/`plain` rendering so both tools
   behave identically from Claude's perspective.
 
 `cli.ts` per skill: manual `process.argv` parsing into a flag → value map, dispatch to a
@@ -150,19 +132,18 @@ rather than surfacing a raw fetch failure. RemoteOK needs no credentials.
 Built and verified one at a time, so working tools are never removed before their replacement
 exists:
 
-1. **USAJobs** — official, well-documented API; template for the other two.
-2. **Adzuna** — same shape, query-param auth instead of headers.
-3. **RemoteOK** — no auth, but has the one genuinely different piece (client-side filtering).
-4. **Danish removal + README/docs updates** — done last, after all three replacements are
+1. **Adzuna** — broadest coverage, query-param auth, key already in `.env`.
+2. **RemoteOK** — no auth, but has the one genuinely different piece (client-side filtering).
+3. **Danish removal + README/docs updates** — done last, after both replacements are
    verified working.
 
-The user registers for USAJobs and Adzuna API keys themselves (free signups); implementation
-pauses at each of those two skills to collect the key into `.env` before the live smoke test.
+The Adzuna key is already collected in `.env`; the live smoke test for that skill can run as
+soon as it's built.
 
 ## Cleanup scope (Danish removal)
 
 - Delete `.agents/skills/{jobbank,jobdanmark,jobindex,jobnet}-search/` entirely, including
   installed `node_modules`.
 - Update `README.md`: remove the four `bun install` lines from Quick Start step 2, replace with
-  the three new US tools; update the "Job search tools" section and file-structure tree to
+  the two new US tools; update the "Job search tools" section and file-structure tree to
   describe the US skills instead of the Danish ones.

@@ -2,6 +2,9 @@
 node_modules/
 bun.lock
 
+# Secrets
+.env
+
 # Python
 __pycache__/
 *.pyc
