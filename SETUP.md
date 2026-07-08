@@ -257,7 +257,7 @@ These commands apply to the stock templates (moderncv CV, `cover.cls` cover lett
 This is expected if you haven't set up salary benchmarking. The `/apply` workflow skips this step automatically.
 
 ### Job search CLI tools not working
-Make sure Bun is installed. Both CLIs are dependency-free — no `bun install` needed. If `adzuna-search` fails with `MISSING_CREDENTIALS`, make sure `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set in the repo-root `.env` file (register for free at https://developer.adzuna.com). `remoteok-search` needs no credentials. Both tools require network access to fetch job listings.
+For the shipped Danish portals and `linkedin-search`, make sure Bun is installed and you ran `bun install` in each CLI directory. `adzuna-search` and `remoteok-search` (this fork's additions) are dependency-free — no `bun install` needed. If `adzuna-search` fails with `MISSING_CREDENTIALS`, make sure `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set in the repo-root `.env` file (register for free at https://developer.adzuna.com). `remoteok-search` needs no credentials. All tools require network access to fetch job listings.
 
 ### LaTeX compilation errors
 - CV: uses `lualatex` (pdflatex often fails on modern MiKTeX with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly)
