@@ -9,6 +9,7 @@ async function main(): Promise<void> {
   if (command !== "search") {
     writeError(`Unknown command: ${command ?? "(none)"}`, "UNKNOWN_COMMAND")
     process.exit(1)
+    return
   }
 
   try {

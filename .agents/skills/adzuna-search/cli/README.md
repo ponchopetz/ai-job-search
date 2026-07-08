@@ -25,10 +25,12 @@ bun run src/cli.ts search [flags]
 | `--results-per-page` | number | `10` | Results per page |
 | `--format` | string | `json` | `json`, `table`, or `plain` |
 
+**Note on `--where`**: Adzuna does not recognize `"Remote"` as a location. To find remote-friendly roles, include a term like `remote` in `--what` instead (results aren't guaranteed to be truly remote — Adzuna doesn't have a dedicated remote filter).
+
 ### Example
 
 ```bash
-bun run src/cli.ts search --what "backend engineer" --where "Remote" --format table
+bun run src/cli.ts search --what "backend engineer" --where "Austin, TX" --format table
 ```
 
 ## Error handling
