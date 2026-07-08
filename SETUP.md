@@ -26,7 +26,7 @@ On Windows, `py --version` is often the most reliable check if `python` is not o
 
 ### Bun (for job search tools)
 
-The job portal CLIs (four Danish portals plus the country-agnostic LinkedIn tool) are written in TypeScript and run with Bun.
+The job portal CLIs (four Danish portals plus the country-agnostic LinkedIn tool) are written in TypeScript and run with Bun. This fork's `adzuna-search`/`remoteok-search` are dependency-free and don't need Bun installed at all, but the rest of this section applies if you want the shipped Danish/LinkedIn tools too.
 
 - macOS/Linux:
 
@@ -141,6 +141,17 @@ For `linkedin-search` the install is optional: it has zero runtime dependencies 
 
 If you're outside Denmark, you can generate an equivalent search skill for your local job board with `/add-portal` — it scaffolds the same CLI structure for any public portal and test-runs a live query before registering. See the "Job search tools" section in the README.
 
+This fork also adds `adzuna-search` and `remoteok-search` for the US market — both dependency-free, no `bun install` needed. `adzuna-search` needs a free API key:
+
+```bash
+cp .env.example .env
+# Register at https://developer.adzuna.com, then fill in .env:
+#   ADZUNA_APP_ID=...
+#   ADZUNA_APP_KEY=...
+```
+
+`remoteok-search` works immediately with no signup.
+
 ## 4. Run the setup interview
 
 Start Claude Code in the repository:
@@ -206,7 +217,7 @@ This creates `salary_data.json` which the `/apply` workflow uses for salary benc
 Find a job posting you're interested in, then:
 
 ```
-/apply https://jobindex.dk/job/1234567
+/apply https://www.indeed.com/viewjob?jk=1234567
 ```
 
 Or paste the job description directly:
