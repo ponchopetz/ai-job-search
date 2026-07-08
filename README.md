@@ -23,7 +23,7 @@ An AI-powered job application framework built on [Claude Code](https://claude.co
 
 ## What this is
 
-A structured workflow that turns Claude Code into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills shipped with the upstream project are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, Jobdanmark), plus a country-agnostic LinkedIn tool — but the pattern is designed to be swapped for your local job boards, either via `/add-portal` or by hand. This fork additionally includes two US-market tools built the same way: Adzuna and RemoteOK.
+A structured workflow that turns Claude Code into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills shipped with the upstream project are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, Jobdanmark), plus a country-agnostic LinkedIn tool — but the pattern is designed to be swapped for your local job boards, either via `/add-portal` or by hand. This fork additionally includes four US-market tools built the same way: Adzuna, RemoteOK, The Muse, and Jooble.
 
 ```
 /setup          /scrape              /apply <url>
@@ -47,7 +47,7 @@ The framework encodes career guidance best practices, including structured evalu
 
 - [Claude Code](https://claude.com/claude-code) (CLI)
 - Python 3.10+
-- [Bun](https://bun.sh) (for job search CLI tools — required for the shipped Danish/LinkedIn tools, optional for `adzuna-search`/`remoteok-search` since they're dependency-free)
+- [Bun](https://bun.sh) (for job search CLI tools — required for the shipped Danish/LinkedIn tools, optional for `adzuna-search`/`remoteok-search`/`themuse-search`/`jooble-search` since they're dependency-free)
 - LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/), [TinyTeX](https://yihui.org/tinytex/), or [MiKTeX](https://miktex.org/). The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`. If using a minimal TeX install such as TinyTeX or BasicTeX, install the extra packages listed in [SETUP.md](SETUP.md#minimal-tex-install-tinytexbasictex).
 - Optional: `pdftotext` from [poppler](https://poppler.freedesktop.org/) (macOS: `brew install poppler`, Debian/Ubuntu: `apt install poppler-utils`, Windows: `choco install poppler`) — used by `/apply`'s ATS parseability check on the compiled CV. If missing, the check degrades gracefully to a visual keyword review.
 
@@ -85,16 +85,18 @@ cd .agents/skills/linkedin-search/cli && bun install && cd ../../../..
 
 For `linkedin-search` the install is optional: it has zero runtime dependencies and runs with plain `bun`; `bun install` only pulls TypeScript dev types.
 
-This fork also adds two US-market tools, `adzuna-search` and `remoteok-search` — both dependency-free, no `bun install` needed. `adzuna-search` needs a free API key:
+This fork also adds four US-market tools — `adzuna-search`, `remoteok-search`, `themuse-search`, and `jooble-search` — all dependency-free, no `bun install` needed. `adzuna-search` and `jooble-search` need free API keys:
 
 ```bash
 cp .env.example .env
 # Register at https://developer.adzuna.com, then fill in .env:
 #   ADZUNA_APP_ID=...
 #   ADZUNA_APP_KEY=...
+# Register at https://jooble.org/api/about, then fill in .env:
+#   JOOBLE_API_KEY=...
 ```
 
-`remoteok-search` works immediately with no signup.
+`remoteok-search` and `themuse-search` work immediately with no signup.
 
 ### 3. Set up your profile
 
@@ -178,7 +180,9 @@ ai-job-search/
 │   ├── jobnet-search/                 # Jobnet.dk (Denmark, government portal)
 │   ├── linkedin-search/               # LinkedIn public job listings (country-agnostic)
 │   ├── adzuna-search/                 # Adzuna job aggregator (broad US private-sector, this fork)
-│   └── remoteok-search/               # RemoteOK (remote-first tech jobs, this fork)
+│   ├── remoteok-search/               # RemoteOK (remote-first tech jobs, this fork)
+│   ├── themuse-search/                # The Muse (US companies, culture/benefits data, this fork)
+│   └── jooble-search/                 # Jooble job aggregator (broad US coverage, this fork)
 ├── cv/
 │   └── main_example.tex               # moderncv LaTeX template
 ├── cover_letters/
@@ -287,7 +291,7 @@ Maintaining a fork adapted to your market or language? Add it to the [Community 
 
 For a **country-agnostic** starting point, the repo also includes **`linkedin-search`** — a job-search skill built on LinkedIn's public, unauthenticated `jobs-guest` endpoints. It is field-agnostic, has **zero runtime dependencies** (runs with just `bun`), and takes the search location as an explicit flag, so it works for any market out of the box (`-l "Berlin, Germany"`, `-l "Mumbai, Maharashtra, India"`, `-l "Remote"`, …). It is intended for **personal use only** — automated access is against LinkedIn's Terms of Service, so keep volume low. See `.agents/skills/linkedin-search/SKILL.md`.
 
-**This fork** additionally adds two US-market tools built by hand the same way `/add-portal` would generate them: `adzuna-search` (broad private-sector aggregator, needs a free API key from developer.adzuna.com) and `remoteok-search` (remote-first tech jobs, no auth needed). See `docs/superpowers/specs/2026-07-08-us-job-board-search-skills-design.md` for the design rationale, or just run `/add-portal` yourself for any other board you want to add.
+**This fork** additionally adds four US-market tools: `adzuna-search` and `remoteok-search` (built by hand the same way `/add-portal` would generate them — see `docs/superpowers/specs/2026-07-08-us-job-board-search-skills-design.md` for the design rationale) and `themuse-search`/`jooble-search` (generated via `/add-portal` itself). `adzuna-search` and `jooble-search` need free API keys (developer.adzuna.com, jooble.org/api/about); `remoteok-search` and `themuse-search` need no signup. See each skill's `SKILL.md` and `url-reference.md` for endpoint details and known quirks, or just run `/add-portal` yourself for any other board you want to add.
 
 ### Salary benchmarking
 

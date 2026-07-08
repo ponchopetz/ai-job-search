@@ -14,6 +14,11 @@ Primary (Danish job market):
 Secondary (company career pages via Google):
 - Direct Google searches with `site:` filters for known target companies
 
+This fork additionally adds (US market):
+- **themuse.com** - The Muse job board (real US companies, culture/benefits data); also
+  queryable directly via the `themuse-search` skill, e.g.
+  `bun run .agents/skills/themuse-search/cli/src/cli.ts search -q "<title>" -l "<city, ST>"`
+
 ## Query Categories
 
 Queries are grouped by priority. Each query should be combined with your location terms (e.g. "Copenhagen", "Sjælland", "Hovedstaden") where the site supports it.
@@ -26,6 +31,7 @@ These match your strongest and most desired career direction.
 site:jobindex.dk "[YOUR_PRIMARY_JOB_TITLE]" [YOUR_CITY]
 site:jobindex.dk "[YOUR_KEY_SKILL]" [YOUR_CITY]
 site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE]" [YOUR_COUNTRY]
+site:themuse.com "[YOUR_PRIMARY_JOB_TITLE]" [YOUR_CITY]
 ```
 
 ### Priority 2: [YOUR_DOMAIN_EXPERTISE]
@@ -36,6 +42,7 @@ These match your domain expertise.
 site:jobindex.dk [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] OR [YOUR_REGION]
 site:jobindex.dk [YOUR_DOMAIN_KEYWORD_2] [YOUR_COUNTRY]
 site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] [YOUR_COUNTRY]
+site:themuse.com [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY]
 ```
 
 ### Priority 3: [YOUR_ADJACENT_ROLE_TYPE]

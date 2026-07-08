@@ -26,7 +26,7 @@ On Windows, `py --version` is often the most reliable check if `python` is not o
 
 ### Bun (for job search tools)
 
-The job portal CLIs (four Danish portals plus the country-agnostic LinkedIn tool) are written in TypeScript and run with Bun. This fork's `adzuna-search`/`remoteok-search` are dependency-free and don't need Bun installed at all, but the rest of this section applies if you want the shipped Danish/LinkedIn tools too.
+The job portal CLIs (four Danish portals plus the country-agnostic LinkedIn tool) are written in TypeScript and run with Bun. This fork's `adzuna-search`/`remoteok-search`/`themuse-search`/`jooble-search` are dependency-free and don't need Bun installed at all, but the rest of this section applies if you want the shipped Danish/LinkedIn tools too.
 
 - macOS/Linux:
 
@@ -141,16 +141,18 @@ For `linkedin-search` the install is optional: it has zero runtime dependencies 
 
 If you're outside Denmark, you can generate an equivalent search skill for your local job board with `/add-portal` — it scaffolds the same CLI structure for any public portal and test-runs a live query before registering. See the "Job search tools" section in the README.
 
-This fork also adds `adzuna-search` and `remoteok-search` for the US market — both dependency-free, no `bun install` needed. `adzuna-search` needs a free API key:
+This fork also adds `adzuna-search`, `remoteok-search`, `themuse-search`, and `jooble-search` for the US market — all dependency-free, no `bun install` needed. `adzuna-search` and `jooble-search` need free API keys:
 
 ```bash
 cp .env.example .env
 # Register at https://developer.adzuna.com, then fill in .env:
 #   ADZUNA_APP_ID=...
 #   ADZUNA_APP_KEY=...
+# Register at https://jooble.org/api/about, then fill in .env:
+#   JOOBLE_API_KEY=...
 ```
 
-`remoteok-search` works immediately with no signup.
+`remoteok-search` and `themuse-search` work immediately with no signup.
 
 ## 4. Run the setup interview
 
@@ -257,7 +259,7 @@ These commands apply to the stock templates (moderncv CV, `cover.cls` cover lett
 This is expected if you haven't set up salary benchmarking. The `/apply` workflow skips this step automatically.
 
 ### Job search CLI tools not working
-For the shipped Danish portals and `linkedin-search`, make sure Bun is installed and you ran `bun install` in each CLI directory. `adzuna-search` and `remoteok-search` (this fork's additions) are dependency-free — no `bun install` needed. If `adzuna-search` fails with `MISSING_CREDENTIALS`, make sure `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set in the repo-root `.env` file (register for free at https://developer.adzuna.com). `remoteok-search` needs no credentials. All tools require network access to fetch job listings.
+For the shipped Danish portals and `linkedin-search`, make sure Bun is installed and you ran `bun install` in each CLI directory. `adzuna-search`, `remoteok-search`, `themuse-search`, and `jooble-search` (this fork's additions) are dependency-free — no `bun install` needed. If `adzuna-search` fails with `MISSING_CREDENTIALS`, make sure `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set in the repo-root `.env` file (register for free at https://developer.adzuna.com). If `jooble-search` fails with `MISSING_CREDENTIALS`, set `JOOBLE_API_KEY` (register for free at https://jooble.org/api/about). `remoteok-search` and `themuse-search` need no credentials. All tools require network access to fetch job listings.
 
 ### LaTeX compilation errors
 - CV: uses `lualatex` (pdflatex often fails on modern MiKTeX with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly)
